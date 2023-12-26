@@ -1,81 +1,148 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
-import { HomeRounded, CloseRounded } from "@mui/icons-material"
+import {
+	HomeRounded,
+	CloseRounded,
+	SearchRounded,
+	FavoriteRounded,
+	UploadRounded,
+	LightModeRounded,
+	LogoutRounded,
+} from '@mui/icons-material';
+import LogoImage from '../Images/Logo.png';
+import { Link } from 'react-router-dom';
 
+// Updated styles with more decoration
 const MenuContainer = styled.div`
-	flex: 0.5;
-	flex-direction: column;
-	height: 100vh;
-	display: flex;
-	background-color: ${({ theme }) => theme.bg};
-	color: ${({ theme }) => theme.text_primary};
-	@media (max-width: 1100px) {
-		position: fixed;
-		z-index: 100;
-		width: 100%;
-		max-width: 250px;
-		left: ${({ setMenuOpen }) => setMenuOpen ? "0" : "-100%"};
-		transition: 0.3s ease-in-out;
+  flex: 0.5;
+  flex-direction: column;
+  height: 100vh;
+  display: flex;
+  background-color: ${({ theme }) => theme.bgLighter};
+  color: ${({ theme }) => theme.text};
+  border-right: 1px solid ${({ theme }) => theme.soft};
+  position: fixed;
+  z-index: 10;
+  width: 250px;
+  transition: 0.3s ease-in-out;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  @media (max-width: 768px) {
+    left: ${({ isOpen }) => (isOpen ? '0' : '-100%')};
+  }
 `;
 
 const Logo = styled.div`
-	width: 100%;
-	color: ${({ theme }) => theme.primary};
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	gap: 6px;
-	font-weight: bold;
-	font-size: 20px;
-	margin: 16px 0px;
+  width: 100%;
+  color: ${({ theme }) => theme.primary};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-weight: bold;
+  font-size: 24px;
+  padding: 16px 0px;
+  background-color: ${({ theme }) => theme.bg};
+  margin-bottom: 20px;
 `;
 
-const Close = styled.div`
-	display: none;
-	@media (max-width: 1100px) {
-		display: block;
-	}
+const CloseIcon = styled(CloseRounded)`
+  display: none;
+  @media (max-width: 768px) {
+    display: block;
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    cursor: pointer;
+    color: ${({ theme }) => theme.text};
+  }
 `;
 
 const Elements = styled.div`
-	padding: 4px 16px;
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	justify-content: flex-start;
-	gap: 12px;
-	cursor: pointer;
-	color: ${({ theme }) => theme.text_secondary};
-	width: 100%;
-	&:hover {
-		background-color: ${({ theme }) => theme.text_secondary};
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+  border-radius: 4px;
+  &:hover {
+    background-color: ${({ theme }) => theme.hover};
+    color: ${({ theme }) => theme.primary};
+  }
+`;
+
+const NavText = styled.span`
+  font-size: 16px;
+`;
+
+const Image = styled.img`
+  height: 40px;
+`;
+
+const menuItems = [
+	{
+		link: "/",
+		name: "Dashboard",
+		icon: <HomeRounded />
+	},
+	{
+		link: "/search",
+		name: "Search",
+		icon: <SearchRounded />
+	},
+	{
+		link: "/favorites",
+		name: "Favorites",
+		icon: <FavoriteRounded />
 	}
-`;
+];
 
-const NavText = styled.div`
-	padding: 12px 0px;
-`;
-
-const Flex = styled.div`
-		display: flex;
-		flex-direction: row;
-		align-items: center;
-		justify-content: center;
-`;
+const buttons = [
+	{
+		fun: () => console.log("Upload"),
+		name: "Upload",
+		icon: <UploadRounded />
+	},
+	{
+		fun: () => console.log("Light Theme"),
+		name: "Theme",
+		icon: <LightModeRounded />
+	},
+	{
+		fun: () => console.log("Logout"),
+		name: "Logout",
+		icon: <LogoutRounded />
+	}
+];
 
 const Sidebar = () => {
+	const [isOpen, setIsOpen] = useState(true);
+
+	const toggleSidebar = () => {
+		setIsOpen(!isOpen);
+	};
+
 	return (
-		<MenuContainer>
-			<Flex>
-				<Logo>Podcast</Logo>
-				<Close>
-					<CloseRounded />
-				</Close>
-			</Flex>
-			<Elements>
-				<HomeRounded />
-				<NavText>Dashboard</NavText>
-			</Elements>
+		<MenuContainer isOpen={isOpen}>
+			<Logo>
+				<Image src={LogoImage} alt="Logo" />
+				Podcast
+				<CloseIcon onClick={toggleSidebar} />
+			</Logo>
+			{menuItems.map((item, index) => (
+				<Link to={item.link} key={index} style={{ textDecoration: 'none' }}>
+					<Elements>
+						{item.icon}
+						<NavText>{item.name}</NavText>
+					</Elements>
+				</Link>
+			))}
+			{buttons.map((item, index) => (
+				<Elements key={index} onClick={item.fun}>
+					{item.icon}
+					<NavText>{item.name}</NavText>
+				</Elements>
+			))}
 		</MenuContainer>
 	);
 };
